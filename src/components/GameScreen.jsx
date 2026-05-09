@@ -7,6 +7,14 @@ export default function GameScreen({ player, onEnd }) {
   const [gameState, setGameState] = useState('playing') 
   const [showContinue, setShowContinue] = useState(false)
   const canvasRef = useRef(null)
+  const jumpRef = useRef(() => {})
+  const audioRef = useRef(null)
+
+  const handleCanvasClick = () => {
+    if (gameState !== 'playing') return
+    jumpRef.current()
+    audioRef.current?.play().catch(() => {})
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -81,7 +89,13 @@ export default function GameScreen({ player, onEnd }) {
     const soundtrack = new Audio('/assets/soundtrack.mp3')
     soundtrack.loop = true
     soundtrack.volume = 0.5
-    soundtrack.play().catch(e => console.log('Audio autoplay prevented'))
+    soundtrack.preload = 'auto'
+    audioRef.current = soundtrack
+    soundtrack.play().catch(() => {})
+
+    const tryPlayAudio = () => {
+      audioRef.current?.play().catch(() => {})
+    }
 
     // Dynamic coordinates based on height
     const getGroundY = () => canvas.height - 160;
@@ -95,8 +109,13 @@ export default function GameScreen({ player, onEnd }) {
       }
     }
 
+    jumpRef.current = jump
+
     const handleKeyDown = (e) => {
-      if (e.code === 'Space') jump()
+      if (e.code === 'Space') {
+        tryPlayAudio()
+        jump()
+      }
     }
     window.addEventListener('keydown', handleKeyDown)
 
@@ -379,11 +398,9 @@ export default function GameScreen({ player, onEnd }) {
         ref={canvasRef} 
         width={800} 
         height={500} 
-        onClick={() => {
-            if (gameState === 'playing') {
-                window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space' }))
-            }
-        }}
+        onClick={handleCanvasClick}
+        role="img"
+        aria-label="Área de juego. Haz clic o presiona espacio para saltar"
         style={{ cursor: 'pointer', background: 'transparent' }}
       />
       {showContinue && (

@@ -14,11 +14,8 @@ El proyecto está construido con **React** y **Vite**, utilizando canvas‑2D pa
 - **Bun** (runtime/paquete manager opcional para iniciar y desarrollar rápidamente)
 
 ## Requisitos previos
-- **Bun** instalado (versión ≥ 1.0).  Si no lo tienes, puedes instalarlo con:
-```bash
-curl https://bun.sh/install | bash
-```
-- Node.js **no** es necesario para ejecutar con Bun, aunque sigue estando en `package.json` por compatibilidad.
+- **Bun** instalado (versión ≥ 1.0).
+- Node.js no es necesario para ejecutar este proyecto.
 
 ## Instalación
 1. Clona o abre el proyecto en tu máquina.
@@ -26,17 +23,16 @@ curl https://bun.sh/install | bash
 ```bash
 bun install
 ```
-   Esto instalará todas las dependencias declaradas en `package.json` usando el gestor de paquetes de Bun.
+   Esto instalará todas las dependencias usando Bun.
 
 ## Desarrollo
 - Para iniciar el servidor de desarrollo con recarga en caliente:
 ```bash
 bun run dev
 ```
-  Se abrirá la aplicación en `http://localhost:5173` (puedes cambiar el puerto en `vite.config.js` si lo deseas).
 
-- Otras tareas útiles definidas en `package.json`:
-  - `bun run build` – Genera una versión de producción en la carpeta `dist/`.
+- Otras tareas útiles:
+  - `bun run build` – Genera una versión de producción.
   - `bun run preview` – Sirve la build de producción localmente.
   - `bun run lint` – Ejecuta ESLint sobre el código fuente.
 

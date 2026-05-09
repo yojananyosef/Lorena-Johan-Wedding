@@ -50,14 +50,16 @@ export default function SelectScreen({ onSelect, onSkip }) {
       </div>
       
       <button 
+        type="button"
         className="go-btn" 
-        onClick={() => onSelect(selected)} 
+        onClick={() => selected && onSelect(selected)} 
         disabled={!selected}
+        aria-label={selected ? `Jugar como ${selected}` : 'Selecciona un personaje'}
         style={{ visibility: selected ? 'visible' : 'hidden' }}
       ></button>
 
       <div className="skip-btn-container">
-         <button className="skip-btn" onClick={onSkip}></button>
+         <button type="button" className="skip-btn" onClick={onSkip} aria-label="Omitir selección"></button>
       </div>
     </div>
   )

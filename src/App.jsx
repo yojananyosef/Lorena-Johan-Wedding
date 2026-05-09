@@ -34,7 +34,14 @@ function App() {
         />
       )}
       {gameState === 'end' && (
-        <EndScreen score={score} onRestart={() => setGameState('intro')} />
+        <EndScreen
+          score={score}
+          onRestart={() => {
+            setScore(0)
+            setPlayer(null)
+            setGameState('intro')
+          }}
+        />
       )}
     </div>
   )
