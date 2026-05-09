@@ -284,7 +284,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         if (frameCount % 120 === 0) {
             const randomRock = rockImgs[Math.floor(Math.random() * rockImgs.length)]
             // Rocks sit IN the grass, partially embedded
-            rocks.push({ x: canvas.width, y: groundY + 50, width: 90, height: 90, img: randomRock })
+            rocks.push({ x: canvas.width, y: groundY + 70, width: 90, height: 90, img: randomRock })
         }
         
         if (frameCount % 80 === 0) {
