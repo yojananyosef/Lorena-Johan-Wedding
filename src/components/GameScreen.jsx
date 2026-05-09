@@ -71,6 +71,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
     let playerWalkX = 0; // How far the player has walked right during win scene
     let winTransitionAlpha = 0; // Romantic overlay fade-in
     let hasShownContinue = false;
+    let continueTimeoutId = null;
     
     let currentScore = 0;
     let localGameState = 'playing';
@@ -227,12 +228,14 @@ export default function GameScreen({ player, onEnd, onRetry }) {
             
             if (isReunited) {
                 ctx.fillStyle = '#ff6b6b'
-                ctx.font = 'bold 36px "Press Start 2P", Arial'
+                ctx.font = 'bold 42px "Press Start 2P", Arial'
                 ctx.textAlign = 'center'
-                ctx.fillText(`¡REUNIDOS!`, (playerDrawX + canvas.width * 0.6) / 2 + renderW / 2, baseY - 30)
+                ctx.fillText('¡REUNIDOS!', canvas.width / 2, canvas.height * 0.18)
                 ctx.textAlign = 'left'
                 if (!hasShownContinue) {
-                    setShowContinue(true);
+                    continueTimeoutId = setTimeout(() => {
+                      setShowContinue(true)
+                    }, 3000)
                     hasShownContinue = true;
                 }
             }
@@ -422,10 +425,10 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         ctx.fillStyle = '#ffd700'
         ctx.font = 'bold 42px "Press Start 2P", Arial'
         ctx.textAlign = 'center'
-        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20)
+        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height * 0.25)
         ctx.fillStyle = '#ffffff'
         ctx.font = '18px Arial'
-        ctx.fillText(localGameOverReason || 'Has perdido.', canvas.width / 2, canvas.height / 2 + 20)
+        ctx.fillText(localGameOverReason || 'Has perdido.', canvas.width / 2, canvas.height * 0.3)
         ctx.restore()
       }
 
@@ -439,6 +442,9 @@ export default function GameScreen({ player, onEnd, onRetry }) {
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('keydown', handleKeyDown)
       soundtrack.pause()
+      if (continueTimeoutId) {
+        clearTimeout(continueTimeoutId)
+      }
     }
   }, [player])
 
@@ -465,7 +471,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         </button>
       </div>
       {(showContinue || gameState === 'gameover') && (
-        <div className="game-over-overlay" style={{ top: '80%', padding: '20px' }}>
+        <div className="game-over-overlay" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: '20px' }}>
           {gameState === 'gameover' ? (
             <p style={{ color: '#2c3e50', margin: '0 0 12px', fontSize: '14px' }}>
               Vuelve a intentar
