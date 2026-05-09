@@ -3,8 +3,8 @@ export default function IntroScreen({ onNext, onSkip }) {
     <div className="screen intro-screen">
       <div className="intro-content">
         <img src="/assets/intro.png" alt="Couple" className="intro-image" />
-        <img src="/assets/how-to-play/how-to-play.png" alt="How to Play" style={{ width: '300px', marginTop: '20px' }} />
-        <img src="/assets/how-to-play/text.png" alt="Instructions" style={{ width: '400px', margin: '20px 0' }} />
+        <img src="/assets/how-to-play/how-to-play.png" alt="How to Play" className="intro-howto" />
+        <img src="/assets/how-to-play/text.png" alt="Instructions" className="intro-instructions" />
         <button type="button" className="ok-btn" onClick={onNext} aria-label="Continuar"></button>
       </div>
       <div className="skip-btn-container">
