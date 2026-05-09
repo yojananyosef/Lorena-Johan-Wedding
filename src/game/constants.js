@@ -1,0 +1,9 @@
+export const WINNING_SCORE = 7
+export const PLAYER_RENDER_WIDTH = 220
+export const PLAYER_IDLE_FRAME = 6
+export const JUMP_VELOCITY = -18
+export const GRAVITY = 0.5
+export const BACKGROUND_SPEED = 1
+export const GROUND_SPEED = 4
+export const BACKGROUND_LOOP = 3000
+export const PAUSE_OVERLAY_ALPHA = 0.45

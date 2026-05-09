@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function SelectScreen({ onSelect, onSkip }) {
   const [selected, setSelected] = useState(null)
   const [frame, setFrame] = useState(0)
-
-  // Standing spritesheet: 1520x579, 4 frames, each 380px wide
-  const STANDING_FRAME_W = 380;
 
   useEffect(() => {
     const interval = setInterval(() => {

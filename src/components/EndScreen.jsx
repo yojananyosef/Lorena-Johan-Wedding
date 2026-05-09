@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function EndScreen({ onRestart }) {
   return (
     <div className="screen end-screen">

@@ -51,6 +51,20 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeIn 0.35s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Common Buttons */
@@ -220,6 +234,39 @@ button:active {
 /* Game Screen */
 .game-screen {
   background-color: transparent;
+}
+
+.game-controls {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  left: auto;
+  z-index: 20;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.control-btn {
+  min-width: 120px;
+  min-height: 44px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  color: #2c3e50;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition: transform 0.15s ease, background 0.15s ease;
+  background-image: none;
+}
+
+.control-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  background: rgba(255, 255, 255, 1);
 }
 
 .game-over-overlay {

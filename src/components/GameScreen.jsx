@@ -1,19 +1,47 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { WINNING_SCORE, PLAYER_RENDER_WIDTH, JUMP_VELOCITY, GRAVITY, BACKGROUND_SPEED, GROUND_SPEED, BACKGROUND_LOOP, PAUSE_OVERLAY_ALPHA } from '../game/constants.js'
+import { loadImage } from '../game/utils.js'
+import { loadPlayerSprite, loadWaitingSprite, loadRockSprites, loadHudImages } from '../game/resources.js'
 
-const WINNING_SCORE = 7;
-
-export default function GameScreen({ player, onEnd }) {
-  const [score, setScore] = useState(0)
+export default function GameScreen({ player, onEnd, onRetry }) {
   const [gameState, setGameState] = useState('playing') 
+  const gameStateRef = useRef('playing')
   const [showContinue, setShowContinue] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const [soundOn, setSoundOn] = useState(true)
   const canvasRef = useRef(null)
   const jumpRef = useRef(() => {})
   const audioRef = useRef(null)
+  const pauseRef = useRef(false)
+  const soundOnRef = useRef(true)
+
+  useEffect(() => {
+    gameStateRef.current = gameState
+  }, [gameState])
 
   const handleCanvasClick = () => {
-    if (gameState !== 'playing') return
+    if (gameStateRef.current !== 'playing' || pauseRef.current) return
     jumpRef.current()
-    audioRef.current?.play().catch(() => {})
+    if (soundOnRef.current) audioRef.current?.play().catch(() => {})
+  }
+
+  const togglePause = () => {
+    if (gameState !== 'playing') return
+    pauseRef.current = !pauseRef.current
+    setIsPaused(pauseRef.current)
+  }
+
+  const toggleSound = () => {
+    const nextSound = !soundOnRef.current
+    soundOnRef.current = nextSound
+    setSoundOn(nextSound)
+    if (audioRef.current) {
+      if (nextSound) {
+        audioRef.current.play().catch(() => {})
+      } else {
+        audioRef.current.pause()
+      }
+    }
   }
 
   useEffect(() => {
@@ -31,7 +59,6 @@ export default function GameScreen({ player, onEnd }) {
     let animationId
     let isJumping = false
     let velocityY = 0
-    let gravity = 0.5 // Lighter gravity for floatier jump
     let bgOffset = 0
     let groundOffset = 0
 
@@ -45,38 +72,26 @@ export default function GameScreen({ player, onEnd }) {
     let winTransitionAlpha = 0; // Romantic overlay fade-in
     let hasShownContinue = false;
     
-    let currentScore = score;
-    let localGameState = gameState;
-
-    const loadImage = (src) => {
-      const img = new Image()
-      img.src = src
-      return img
-    }
+    let currentScore = 0;
+    let localGameState = 'playing';
+    let localGameOverReason = '';
 
     const bgImg = loadImage('/assets/background/clouds.png')
     const groundImg = loadImage('/assets/background/ground.png')
     
-    const playerImg = loadImage(player === 'lorena' ? '/assets/players/lorena-all-spritesheet.png' : '/assets/players/johan-all-spritesheet.png')
+    const playerImg = loadPlayerSprite(player)
     
     // Waiting sprite: static image of partner standing with puppy
-    const waitingImg = loadImage(player === 'lorena' ? '/assets/johan-waiting.png' : '/assets/lorena-waiting.png')
+    const waitingImg = loadWaitingSprite(player)
     
-    const rockImgs = [1, 2, 3, 4, 5, 6].map(i => loadImage(`/assets/rocks/rock${i}.png`))
+    const rockImgs = loadRockSprites()
     
     const berryImg = loadImage('/assets/berry.png')
     
     const ringImg = loadImage('/assets/point-tracker/ring-collected.png')
 
     // HUD Images
-    const hudCollect = new Image()
-    hudCollect.src = '/assets/point-tracker/collect.png'
-    const hudBerryShadow = new Image()
-    hudBerryShadow.src = '/assets/point-tracker/berry-shadow.png'
-    const hudBerryCol = new Image()
-    hudBerryCol.src = '/assets/point-tracker/berry-collected.png'
-    const hudRingShadow = new Image()
-    hudRingShadow.src = '/assets/point-tracker/ring-shadow.png'
+    const { hudCollect, hudBerryShadow, hudBerryCol, hudRingShadow } = loadHudImages()
 
     const soundtrack = new Audio('/assets/soundtrack.mp3')
     soundtrack.loop = true
@@ -97,7 +112,7 @@ export default function GameScreen({ player, onEnd }) {
     const jump = () => {
       if (!isJumping && localGameState === 'playing') {
         isJumping = true
-        velocityY = -18 // Much higher jump
+        velocityY = JUMP_VELOCITY
       }
     }
 
@@ -105,8 +120,15 @@ export default function GameScreen({ player, onEnd }) {
 
     const handleKeyDown = (e) => {
       if (e.code === 'Space') {
-        tryPlayAudio()
-        jump()
+        if (!pauseRef.current) {
+          tryPlayAudio()
+          jump()
+        }
+      }
+
+      if (e.code === 'KeyP' && gameStateRef.current === 'playing') {
+        pauseRef.current = !pauseRef.current
+        setIsPaused(pauseRef.current)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -119,12 +141,12 @@ export default function GameScreen({ player, onEnd }) {
       const groundY = getGroundY();
       const baseY = getPlayerBaseY();
 
-      if (localGameState !== 'won') {
-        bgOffset -= 1
-        groundOffset -= 4
+      if (localGameState !== 'won' && localGameState !== 'gameover' && !pauseRef.current) {
+        bgOffset -= BACKGROUND_SPEED
+        groundOffset -= GROUND_SPEED
       }
-      if (bgOffset <= -3000) bgOffset = 0
-      if (groundOffset <= -3000) groundOffset = 0
+      if (bgOffset <= -BACKGROUND_LOOP) bgOffset = 0
+      if (groundOffset <= -BACKGROUND_LOOP) groundOffset = 0
       
       ctx.drawImage(bgImg, bgOffset, groundY - 150, 3000, 300)
       ctx.drawImage(bgImg, bgOffset + 3000, groundY - 150, 3000, 300)
@@ -132,13 +154,13 @@ export default function GameScreen({ player, onEnd }) {
       ctx.drawImage(groundImg, groundOffset, groundY, 3000, 180)
       ctx.drawImage(groundImg, groundOffset + 3000, groundY, 3000, 180)
 
-      if (localGameState !== 'won') {
+      if (localGameState !== 'won' && localGameState !== 'gameover' && !pauseRef.current) {
         playerY += velocityY
-        velocityY += gravity
-      } else {
+        velocityY += GRAVITY
+      } else if (localGameState === 'won') {
         if (playerY < baseY) {
             playerY += velocityY
-            velocityY += gravity
+            velocityY += GRAVITY
         } else {
             playerY = baseY
             isJumping = false
@@ -153,8 +175,8 @@ export default function GameScreen({ player, onEnd }) {
 
       let isReunited = false;
 
-      // Render size: 220px wide (matching original CSS width: 220px)
-      const renderW = 220;
+      // Render size for the player
+      const renderW = PLAYER_RENDER_WIDTH;
       // Player height for collision (spritesheet aspect ratio ~1.686:1)
       const playerH = renderW * 1.686;
 
@@ -165,7 +187,7 @@ export default function GameScreen({ player, onEnd }) {
         const fh = playerImg.height;
         const renderH = renderW * (fh / fw);
         
-        let currentFrame = 6; // IDLE
+        let currentFrame;
         let playerDrawX = 100; // Default left position
         
         if (localGameState === 'won') {
@@ -258,7 +280,7 @@ export default function GameScreen({ player, onEnd }) {
           ctx.restore();
       }
 
-      if (localGameState === 'playing') {
+      if (localGameState === 'playing' && !pauseRef.current) {
         if (frameCount % 120 === 0) {
             const randomRock = rockImgs[Math.floor(Math.random() * rockImgs.length)]
             // Rocks sit IN the grass, partially embedded
@@ -277,7 +299,7 @@ export default function GameScreen({ player, onEnd }) {
       }
 
       // Only draw/collide obstacles during playing state
-      if (localGameState === 'playing') {
+      if (localGameState === 'playing' && !pauseRef.current) {
         rocks.forEach((rock, index) => {
           rock.x -= 6
           if (rock.img.width > 0) ctx.drawImage(rock.img, rock.x, rock.y, rock.width, rock.height)
@@ -292,8 +314,15 @@ export default function GameScreen({ player, onEnd }) {
             rocks[index].ouch = true;
             if (currentScore > 0) {
                 currentScore--;
-                setScore(currentScore);
-            }
+            } else {
+                pauseRef.current = false
+                localGameState = 'gameover'
+                setGameState('gameover')
+                localGameOverReason = '¡La roca te tumbó sin bayas!'
+                rocks = []
+                berries = []
+                rings = []
+              }
           }
           
           if (rock.ouch) {
@@ -316,7 +345,6 @@ export default function GameScreen({ player, onEnd }) {
           ) {
             berries.splice(index, 1)
             currentScore += 1
-            setScore(currentScore)
           }
         })
         berries = berries.filter(berry => berry.x + berry.width > -100)
@@ -374,6 +402,33 @@ export default function GameScreen({ player, onEnd }) {
         }
       }
 
+      if (pauseRef.current) {
+        ctx.save()
+        ctx.fillStyle = `rgba(0, 0, 0, ${PAUSE_OVERLAY_ALPHA})`
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillStyle = '#ffffff'
+        ctx.font = 'bold 42px "Press Start 2P", Arial'
+        ctx.textAlign = 'center'
+        ctx.fillText('PAUSA', canvas.width / 2, canvas.height / 2 - 10)
+        ctx.font = '18px Arial'
+        ctx.fillText('Pulsa P o usa el botón para continuar', canvas.width / 2, canvas.height / 2 + 30)
+        ctx.restore()
+      }
+
+      if (localGameState === 'gameover') {
+        ctx.save()
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillStyle = '#ffd700'
+        ctx.font = 'bold 42px "Press Start 2P", Arial'
+        ctx.textAlign = 'center'
+        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20)
+        ctx.fillStyle = '#ffffff'
+        ctx.font = '18px Arial'
+        ctx.fillText(localGameOverReason || 'Has perdido.', canvas.width / 2, canvas.height / 2 + 20)
+        ctx.restore()
+      }
+
       animationId = requestAnimationFrame(loop)
     }
 
@@ -401,9 +456,27 @@ export default function GameScreen({ player, onEnd }) {
       >
         Tu navegador no soporta canvas. Por favor usa un navegador moderno.
       </canvas>
-      {showContinue && (
+      <div className="game-controls game-controls-right">
+        <button type="button" className="control-btn" onClick={togglePause} aria-label={isPaused ? 'Reanudar juego' : 'Pausar juego'}>
+          {isPaused ? 'Reanudar' : 'Pausa'}
+        </button>
+        <button type="button" className="control-btn" onClick={toggleSound} aria-label={soundOn ? 'Silenciar sonido' : 'Activar sonido'}>
+          {soundOn ? 'Sonido ON' : 'Sonido OFF'}
+        </button>
+      </div>
+      {(showContinue || gameState === 'gameover') && (
         <div className="game-over-overlay" style={{ top: '80%', padding: '20px' }}>
-           <button type="button" className="ok-btn" onClick={() => onEnd()} aria-label="Continuar"></button>
+          {gameState === 'gameover' ? (
+            <p style={{ color: '#2c3e50', margin: '0 0 12px', fontSize: '14px' }}>
+              Vuelve a intentar
+            </p>
+          ) : null}
+          <button
+            type="button"
+            className="ok-btn"
+            onClick={() => (gameState === 'gameover' ? onRetry() : onEnd())}
+            aria-label={gameState === 'gameover' ? 'Reintentar' : 'Continuar'}
+          ></button>
         </div>
       )}
     </div>

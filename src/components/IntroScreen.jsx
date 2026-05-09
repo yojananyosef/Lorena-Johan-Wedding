@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function IntroScreen({ onNext, onSkip }) {
   return (
     <div className="screen intro-screen">
