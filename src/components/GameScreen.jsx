@@ -43,38 +43,30 @@ export default function GameScreen({ player, onEnd }) {
     
     let playerWalkX = 0; // How far the player has walked right during win scene
     let winTransitionAlpha = 0; // Romantic overlay fade-in
+    let hasShownContinue = false;
     
     let currentScore = score;
     let localGameState = gameState;
 
-    const bgSky = new Image()
-    bgSky.src = '/assets/background.png' // Base sky
-    const bgImg = new Image()
-    bgImg.src = '/assets/background/clouds.png'
-    const groundImg = new Image()
-    groundImg.src = '/assets/background/ground.png'
+    const loadImage = (src) => {
+      const img = new Image()
+      img.src = src
+      return img
+    }
+
+    const bgImg = loadImage('/assets/background/clouds.png')
+    const groundImg = loadImage('/assets/background/ground.png')
     
-    const playerImg = new Image()
-    playerImg.src = player === 'lorena' ? '/assets/players/lorena-all-spritesheet.png' : '/assets/players/johan-all-spritesheet.png'
-    
-    const partnerImg = new Image()
-    partnerImg.src = player === 'lorena' ? '/assets/players/johan-all-spritesheet.png' : '/assets/players/lorena-all-spritesheet.png'
+    const playerImg = loadImage(player === 'lorena' ? '/assets/players/lorena-all-spritesheet.png' : '/assets/players/johan-all-spritesheet.png')
     
     // Waiting sprite: static image of partner standing with puppy
-    const waitingImg = new Image()
-    waitingImg.src = player === 'lorena' ? '/assets/johan-waiting.png' : '/assets/lorena-waiting.png'
+    const waitingImg = loadImage(player === 'lorena' ? '/assets/johan-waiting.png' : '/assets/lorena-waiting.png')
     
-    const rockImgs = [1, 2, 3, 4, 5, 6].map(i => {
-      const img = new Image()
-      img.src = `/assets/rocks/rock${i}.png`
-      return img
-    })
+    const rockImgs = [1, 2, 3, 4, 5, 6].map(i => loadImage(`/assets/rocks/rock${i}.png`))
     
-    const berryImg = new Image()
-    berryImg.src = '/assets/berry.png'
+    const berryImg = loadImage('/assets/berry.png')
     
-    const ringImg = new Image()
-    ringImg.src = '/assets/point-tracker/ring-collected.png'
+    const ringImg = loadImage('/assets/point-tracker/ring-collected.png')
 
     // HUD Images
     const hudCollect = new Image()
@@ -217,7 +209,10 @@ export default function GameScreen({ player, onEnd }) {
                 ctx.textAlign = 'center'
                 ctx.fillText(`¡REUNIDOS!`, (playerDrawX + canvas.width * 0.6) / 2 + renderW / 2, baseY - 30)
                 ctx.textAlign = 'left'
-                if (!showContinue) setShowContinue(true);
+                if (!hasShownContinue) {
+                    setShowContinue(true);
+                    hasShownContinue = true;
+                }
             }
         } else if (isJumping) {
             currentFrame = 1; // Mid-stride for jump
@@ -401,11 +396,14 @@ export default function GameScreen({ player, onEnd }) {
         onClick={handleCanvasClick}
         role="img"
         aria-label="Área de juego. Haz clic o presiona espacio para saltar"
+        tabIndex={0}
         style={{ cursor: 'pointer', background: 'transparent' }}
-      />
+      >
+        Tu navegador no soporta canvas. Por favor usa un navegador moderno.
+      </canvas>
       {showContinue && (
         <div className="game-over-overlay" style={{ top: '80%', padding: '20px' }}>
-           <button className="ok-btn" onClick={() => onEnd(score, true)}></button>
+           <button type="button" className="ok-btn" onClick={() => onEnd()} aria-label="Continuar"></button>
         </div>
       )}
     </div>

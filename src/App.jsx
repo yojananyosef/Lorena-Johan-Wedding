@@ -8,7 +8,6 @@ import EndScreen from './components/EndScreen'
 function App() {
   const [gameState, setGameState] = useState('intro') // intro, select, game, end
   const [player, setPlayer] = useState(null) // 'lorena' | 'johan'
-  const [score, setScore] = useState(0)
 
   return (
     <div className="app-container">
@@ -27,17 +26,12 @@ function App() {
       {gameState === 'game' && (
         <GameScreen 
           player={player} 
-          onEnd={(finalScore, won) => {
-            setScore(finalScore)
-            setGameState('end')
-          }} 
+          onEnd={() => setGameState('end')} 
         />
       )}
       {gameState === 'end' && (
         <EndScreen
-          score={score}
           onRestart={() => {
-            setScore(0)
             setPlayer(null)
             setGameState('intro')
           }}
