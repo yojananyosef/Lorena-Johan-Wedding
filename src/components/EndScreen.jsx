@@ -32,7 +32,7 @@ export default function EndScreen({ onRestart }) {
         <p>Acompáñanos a celebrar nuestra boda.</p>
         <div className="buttons-row" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <a
-            href="https://example.com"
+            href="https://withjoy.com/lorena-y-johan"
             className="wedding-site-btn"
             target="_blank"
             rel="noopener noreferrer"
