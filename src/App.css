@@ -196,6 +196,7 @@ button:active {
 /* Select Screen */
 .select-screen {
   background-color: transparent;
+  padding: clamp(8px, 2vh, 18px) 12px clamp(24px, 4vh, 60px);
 }
 
 .choose-title-img {
@@ -208,6 +209,8 @@ button:active {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
+  width: min(92vw, 840px);
   gap: clamp(16px, 6vw, 80px);
   margin-bottom: clamp(20px, 4vh, 50px);
 }
@@ -279,6 +282,34 @@ button:active {
   position: absolute;
   bottom: clamp(16px, 3vh, 40px);
   right: clamp(16px, 3vw, 40px);
+}
+
+@media (max-width: 560px) {
+  .choose-title-img {
+    width: min(90vw, 300px);
+  }
+
+  .players-container {
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .player-bg {
+    width: min(40vw, 170px);
+    height: min(58vw, 250px);
+  }
+
+  .player-sprite {
+    width: min(24vw, 110px);
+    height: min(38vw, 170px);
+  }
+
+  .click-highlight {
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+  }
 }
 
 @media (max-width: 640px) {

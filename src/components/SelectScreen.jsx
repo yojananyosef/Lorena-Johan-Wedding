@@ -23,8 +23,8 @@ export default function SelectScreen({ onSelect, onSkip }) {
           <div className="player-bg lorena-bg">
             <div className="player-sprite" style={{
               backgroundImage: 'url(/assets/lorena-spritesheet.png)',
-              backgroundPosition: `-${frame * 180}px 0px`,
-              backgroundSize: '720px 274px',
+              backgroundPosition: `${(frame * 100) / 3}% 0%`,
+              backgroundSize: '400% 100%',
             }}></div>
             {selected === 'lorena' && <img src="/assets/sparkle.gif" className="sparkle" alt="sparkle" />}
           </div>
@@ -38,8 +38,8 @@ export default function SelectScreen({ onSelect, onSkip }) {
           <div className="player-bg johan-bg">
             <div className="player-sprite" style={{
               backgroundImage: 'url(/assets/johan-spritesheet.png)',
-              backgroundPosition: `-${frame * 180}px 0px`,
-              backgroundSize: '720px 274px',
+              backgroundPosition: `${(frame * 100) / 3}% 0%`,
+              backgroundSize: '400% 100%',
             }}></div>
             {selected === 'johan' && <img src="/assets/sparkle.gif" className="sparkle" alt="sparkle" />}
           </div>
