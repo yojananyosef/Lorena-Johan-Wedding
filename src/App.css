@@ -404,13 +404,18 @@ button:active {
   max-width: 100%;
   display: block;
   margin: 0 auto;
-  transform: translateX(-6px);
+  aspect-ratio: 8.8 / 1;
+  min-height: 70px;
   height: auto;
   object-fit: contain;
 }
 
 .end-invite-image {
   width: min(82vw, 520px);
+  max-width: 100%;
+  display: block;
+  aspect-ratio: 4.5 / 1;
+  min-height: 120px;
   height: auto;
   object-fit: contain;
   margin-top: -6px;
