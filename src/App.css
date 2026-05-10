@@ -28,6 +28,12 @@ body {
   align-items: center;
 }
 
+@supports (height: 100dvh) {
+  .app-container {
+    height: 100dvh;
+  }
+}
+
 .app-container::after {
   content: '';
   position: absolute;
@@ -273,6 +279,35 @@ button:active {
   position: absolute;
   bottom: clamp(16px, 3vh, 40px);
   right: clamp(16px, 3vw, 40px);
+}
+
+@media (max-width: 640px) {
+  .choose-title-img {
+    width: min(90vw, 320px);
+  }
+
+  .players-container {
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .player-bg {
+    width: min(42vw, 190px);
+    height: min(62vw, 280px);
+  }
+
+  .player-sprite {
+    width: min(28vw, 130px);
+    height: min(44vw, 200px);
+  }
+}
+
+@media (max-width: 640px) {
+  .control-btn {
+    min-width: 96px;
+    padding: 8px 10px;
+    font-size: 10px;
+  }
 }
 
 /* Game Screen */

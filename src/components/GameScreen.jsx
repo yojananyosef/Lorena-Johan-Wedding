@@ -107,8 +107,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
 
     // Dynamic coordinates based on height
     const getGroundY = () => canvas.height - 160;
-    const getPlayerBaseY = () => canvas.height - 380;
-    let playerY = getPlayerBaseY()
+    let playerY = getGroundY()
 
     const jump = () => {
       if (!isJumping && localGameState === 'playing') {
@@ -140,7 +139,27 @@ export default function GameScreen({ player, onEnd, onRetry }) {
       if (hitTimer > 0) hitTimer--;
 
       const groundY = getGroundY();
-      const baseY = getPlayerBaseY();
+
+      const scale = Math.min(1, Math.max(0.6, canvas.width / 900));
+      const rockSize = 90 * scale;
+      const berrySize = 60 * scale;
+      const ringSize = 80 * scale;
+      const rockEmbed = 10 * scale;
+      const groundBaseline = groundY + 150;
+      const playerX = 100 * scale;
+      const hitPadding = 30 * scale;
+
+      // Render size for the player
+      const renderW = PLAYER_RENDER_WIDTH * scale;
+      const numFrames = 16;
+      const fw = playerImg.width > 0 ? playerImg.width / numFrames : renderW;
+      const fh = playerImg.height > 0 ? playerImg.height : renderW * 1.686;
+      const renderH = renderW * (fh / fw);
+      const baseY = groundBaseline - renderH + (2 * scale);
+
+      if (!isJumping && velocityY === 0 && Math.abs(playerY - baseY) > 0.5) {
+        playerY = baseY;
+      }
 
       if (localGameState !== 'won' && localGameState !== 'gameover' && !pauseRef.current) {
         bgOffset -= BACKGROUND_SPEED
@@ -176,20 +195,14 @@ export default function GameScreen({ player, onEnd, onRetry }) {
 
       let isReunited = false;
 
-      // Render size for the player
-      const renderW = PLAYER_RENDER_WIDTH;
-      // Player height for collision (spritesheet aspect ratio ~1.686:1)
-      const playerH = renderW * 1.686;
+      // Player height for collision (match rendered size)
+      const playerH = renderH;
+      const playerHitW = renderW * 0.55;
 
       if (playerImg.width > 0) {
         // Calculate frame dimensions from actual image
-        const numFrames = 16;
-        const fw = playerImg.width / numFrames;
-        const fh = playerImg.height;
-        const renderH = renderW * (fh / fw);
-        
         let currentFrame;
-        let playerDrawX = 100; // Default left position
+        let playerDrawX = playerX; // Default left position
         
         if (localGameState === 'won') {
             // Fade in the romantic overlay
@@ -198,12 +211,12 @@ export default function GameScreen({ player, onEnd, onRetry }) {
             }
             
             // Player walks RIGHT towards the partner
-            playerWalkX += 3;
-            playerDrawX = 100 + playerWalkX;
+            playerWalkX += 3 * scale;
+            playerDrawX = playerX + playerWalkX;
             
             // Partner waits at right side of screen
             const partnerWaitX = canvas.width * 0.6;
-            const meetPoint = partnerWaitX - renderW - 20;
+            const meetPoint = partnerWaitX - renderW - (20 * scale);
             
             if (playerDrawX >= meetPoint) {
                 playerDrawX = meetPoint;
@@ -287,16 +300,16 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         if (frameCount % 120 === 0) {
             const randomRock = rockImgs[Math.floor(Math.random() * rockImgs.length)]
             // Rocks sit IN the grass, partially embedded
-            rocks.push({ x: canvas.width, y: groundY + 70, width: 90, height: 90, img: randomRock })
+            rocks.push({ x: canvas.width, y: groundBaseline - rockSize + rockEmbed, width: rockSize, height: rockSize, img: randomRock })
         }
         
         if (frameCount % 80 === 0) {
             if (currentScore < WINNING_SCORE) {
                 if (Math.random() > 0.3) {
-                    berries.push({ x: canvas.width, y: baseY - 150 + Math.random() * 150, width: 60, height: 60 })
+                    berries.push({ x: canvas.width, y: baseY - (150 * scale) + Math.random() * (150 * scale), width: berrySize, height: berrySize })
                 }
             } else if (rings.length === 0) {
-                rings.push({ x: canvas.width, y: baseY - 100, width: 80, height: 80 })
+                  rings.push({ x: canvas.width, y: baseY - (100 * scale), width: ringSize, height: ringSize })
             }
         }
       }
@@ -309,9 +322,9 @@ export default function GameScreen({ player, onEnd, onRetry }) {
 
           if (
             hitTimer === 0 &&
-            100 < rock.x + rock.width - 30 &&
-            100 + 120 > rock.x + 30 &&
-            playerY + playerH > rock.y + 20
+            playerX < rock.x + rock.width - hitPadding &&
+            playerX + playerHitW > rock.x + hitPadding &&
+            playerY + playerH > rock.y + (20 * scale)
           ) {
             hitTimer = 30; // invincibility
             rocks[index].ouch = true;
@@ -341,8 +354,8 @@ export default function GameScreen({ player, onEnd, onRetry }) {
           if (berryImg.width > 0) ctx.drawImage(berryImg, berry.x, berry.y, berry.width, berry.height)
 
           if (
-            100 < berry.x + berry.width &&
-            100 + 120 > berry.x &&
+            playerX < berry.x + berry.width &&
+            playerX + playerHitW > berry.x &&
             playerY < berry.y + berry.height &&
             playerY + playerH > berry.y
           ) {
@@ -363,8 +376,8 @@ export default function GameScreen({ player, onEnd, onRetry }) {
 
         if (
           localGameState === 'playing' &&
-          100 < ring.x + ring.width &&
-          100 + 120 > ring.x &&
+          playerX < ring.x + ring.width &&
+          playerX + playerHitW > ring.x &&
           playerY < ring.y + ring.height &&
           playerY + playerH > ring.y
         ) {
@@ -381,26 +394,35 @@ export default function GameScreen({ player, onEnd, onRetry }) {
 
       // --- DRAW HUD ---
       if (hudCollect.width > 0) {
-        ctx.drawImage(hudCollect, 40, 40, 150, 45);
+        const hudScale = Math.min(1, Math.max(0.8, canvas.width / 900));
+        const hudX = 20 * hudScale;
+        const hudY = 20 * hudScale;
+        const hudCollectW = 150 * hudScale;
+        const hudCollectH = 45 * hudScale;
+        const hudStep = 45 * hudScale;
+        const berryDraw = 40 * hudScale;
+        const berryY = hudY + (5 * hudScale);
+
+        ctx.drawImage(hudCollect, hudX, hudY, hudCollectW, hudCollectH);
         
-        let startX = 210;
+        let startX = hudX + hudCollectW + (10 * hudScale);
         // Draw 7 berries
         for (let i = 0; i < WINNING_SCORE; i++) {
           if (currentScore > i && hudBerryCol.width > 0) {
-            ctx.drawImage(hudBerryCol, startX + i * 45, 45, 40, 40);
+            ctx.drawImage(hudBerryCol, startX + i * hudStep, berryY, berryDraw, berryDraw);
           } else if (hudBerryShadow.width > 0) {
-            ctx.drawImage(hudBerryShadow, startX + i * 45, 45, 40, 40);
+            ctx.drawImage(hudBerryShadow, startX + i * hudStep, berryY, berryDraw, berryDraw);
           }
         }
         
         // Draw ring at the end
         if (hudRingShadow.width > 0) {
-          const ringHudX = startX + WINNING_SCORE * 45;
+          const ringHudX = startX + WINNING_SCORE * hudStep;
           if (localGameState === 'won' && ringImg.width > 0) {
             // Show the beautiful hand-drawn collected ring
-            ctx.drawImage(ringImg, ringHudX, 38, 50, 50);
+            ctx.drawImage(ringImg, ringHudX, hudY - (4 * hudScale), 50 * hudScale, 50 * hudScale);
           } else {
-            ctx.drawImage(hudRingShadow, ringHudX, 45, 40, 40);
+            ctx.drawImage(hudRingShadow, ringHudX, berryY, berryDraw, berryDraw);
           }
         }
       }
