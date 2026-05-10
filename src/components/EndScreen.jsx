@@ -1,4 +1,20 @@
+import { useEffect, useRef } from 'react'
+
 export default function EndScreen({ onRestart }) {
+  const goAudioRef = useRef(null)
+
+  useEffect(() => {
+    goAudioRef.current = new Audio('/assets/sound-effects/clicked-go-and-wedding-site.ogg')
+    goAudioRef.current.volume = 0.7
+  }, [])
+
+  const playGo = () => {
+    const audio = goAudioRef.current
+    if (!audio) return
+    audio.currentTime = 0
+    audio.play().catch(() => {})
+  }
+
   return (
     <div className="screen end-screen">
       <div className="end-content">
@@ -21,6 +37,7 @@ export default function EndScreen({ onRestart }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Ir al sitio de la boda"
+            onClick={playGo}
           ></a>
         </div>
       </div>

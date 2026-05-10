@@ -11,6 +11,9 @@ export default function GameScreen({ player, onEnd, onRetry }) {
   const canvasRef = useRef(null)
   const jumpRef = useRef(() => {})
   const audioRef = useRef(null)
+  const sfxCollectRef = useRef(null)
+  const sfxHitRef = useRef(null)
+  const sfxClickRef = useRef(null)
   const pauseRef = useRef(false)
   const soundOnRef = useRef(true)
 
@@ -41,6 +44,12 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         audioRef.current.pause()
       }
     }
+  }
+
+  const playSfx = (audio) => {
+    if (!audio || !soundOnRef.current) return
+    audio.currentTime = 0
+    audio.play().catch(() => {})
   }
 
   useEffect(() => {
@@ -99,6 +108,13 @@ export default function GameScreen({ player, onEnd, onRetry }) {
     soundtrack.preload = 'auto'
     audioRef.current = soundtrack
     soundtrack.play().catch(() => {})
+
+    sfxCollectRef.current = new Audio('/assets/sound-effects/collect.ogg')
+    sfxCollectRef.current.volume = 0.6
+    sfxHitRef.current = new Audio('/assets/sound-effects/hit-rock.ogg')
+    sfxHitRef.current.volume = 0.7
+    sfxClickRef.current = new Audio('/assets/sound-effects/clicked-ok-and-skip-and-player.ogg')
+    sfxClickRef.current.volume = 0.6
 
     const tryPlayAudio = () => {
       audioRef.current?.play().catch(() => {})
@@ -327,6 +343,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
           ) {
             hitTimer = 30; // invincibility
             rocks[index].ouch = true;
+            playSfx(sfxHitRef.current)
             if (currentScore > 0) {
                 currentScore--;
             } else {
@@ -360,6 +377,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
           ) {
             berries.splice(index, 1)
             currentScore += 1
+            playSfx(sfxCollectRef.current)
           }
         })
         berries = berries.filter(berry => berry.x + berry.width > -100)
@@ -381,6 +399,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
           playerY + playerH > ring.y
         ) {
           rings.splice(index, 1)
+          playSfx(sfxCollectRef.current)
           localGameState = 'won'
           setGameState('won')
           // Clear all obstacles for the romantic walk
@@ -511,8 +530,11 @@ export default function GameScreen({ player, onEnd, onRetry }) {
           <button
             type="button"
             className="ok-btn"
-            onClick={() => (gameState === 'gameover' ? onRetry() : onEnd())}
-            aria-label={gameState === 'gameover' ? 'Reintentar' : 'Continuar'}
+            onClick={() => {
+              playSfx(sfxClickRef.current)
+              onRetry()
+            }}
+            aria-label="Reintentar"
           ></button>
         </div>
       )}

@@ -359,7 +359,8 @@ button:active {
 
 @media (max-width: 640px) {
   .game-controls {
-    top: 88px;
+    position: absolute;
+    top: 44px;
     right: 12px;
     flex-direction: column;
     align-items: flex-end;
@@ -381,7 +382,6 @@ button:active {
 }
 
 .game-controls {
-  position: absolute;
   top: 24px;
   right: 24px;
   left: auto;

@@ -1,15 +1,41 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function SelectScreen({ onSelect, onSkip }) {
   const [selected, setSelected] = useState(null)
   const [frame, setFrame] = useState(0)
+  const clickAudioRef = useRef(null)
+  const goAudioRef = useRef(null)
 
   useEffect(() => {
+    clickAudioRef.current = new Audio('/assets/sound-effects/clicked-ok-and-skip-and-player.ogg')
+    clickAudioRef.current.volume = 0.6
+    goAudioRef.current = new Audio('/assets/sound-effects/clicked-go-and-wedding-site.ogg')
+    goAudioRef.current.volume = 0.7
+
     const interval = setInterval(() => {
       setFrame(f => (f + 1) % 4)
     }, 300)
     return () => clearInterval(interval)
   }, [])
+
+  const playClick = () => {
+    const audio = clickAudioRef.current
+    if (!audio) return
+    audio.currentTime = 0
+    audio.play().catch(() => {})
+  }
+
+  const playGo = () => {
+    const audio = goAudioRef.current
+    if (!audio) return
+    audio.currentTime = 0
+    audio.play().catch(() => {})
+  }
+
+  const handleSelect = (value) => {
+    playClick()
+    setSelected(value)
+  }
 
   return (
     <div className="screen select-screen">
@@ -17,7 +43,7 @@ export default function SelectScreen({ onSelect, onSkip }) {
       <div className="players-container">
         <div 
           className={`player-card ${selected === 'lorena' ? 'selected' : ''}`}
-          onClick={() => setSelected('lorena')}
+          onClick={() => handleSelect('lorena')}
         >
           {selected === 'lorena' && <img src="/assets/click-highlight.png" className="click-highlight" alt="" />}
           <div className="player-bg lorena-bg">
@@ -33,7 +59,7 @@ export default function SelectScreen({ onSelect, onSkip }) {
 
         <div 
           className={`player-card ${selected === 'johan' ? 'selected' : ''}`}
-          onClick={() => setSelected('johan')}
+          onClick={() => handleSelect('johan')}
         >
           {selected === 'johan' && <img src="/assets/click-highlight.png" className="click-highlight" alt="" />}
           <div className="player-bg johan-bg">
@@ -51,14 +77,18 @@ export default function SelectScreen({ onSelect, onSkip }) {
       <button 
         type="button"
         className="go-btn" 
-        onClick={() => selected && onSelect(selected)} 
+        onClick={() => {
+          if (!selected) return
+          playGo()
+          onSelect(selected)
+        }} 
         disabled={!selected}
         aria-label={selected ? `Jugar como ${selected}` : 'Selecciona un personaje'}
         style={{ visibility: selected ? 'visible' : 'hidden' }}
       ></button>
 
       <div className="skip-btn-container">
-         <button type="button" className="skip-btn" onClick={onSkip} aria-label="Omitir selección"></button>
+         <button type="button" className="skip-btn" onClick={() => { playClick(); onSkip() }} aria-label="Omitir selección"></button>
       </div>
     </div>
   )
