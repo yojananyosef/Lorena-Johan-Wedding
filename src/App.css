@@ -421,19 +421,37 @@ button:active {
 
 /* End Screen */
 .end-screen {
-  background-color: #ffdac1;
+  background-color: transparent;
   text-align: center;
 }
 
 .end-content {
-  width: min(90vw, 640px);
-  background: rgba(255, 255, 255, 0.9);
-  padding: clamp(24px, 4vw, 50px);
+  width: min(92vw, 760px);
+  background: #ffffff;
+  padding: clamp(28px, 4.5vw, 64px);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
+  box-shadow: 0 24px 40px rgba(0, 0, 0, 0.08);
+}
+
+.end-title-image {
+  width: min(90vw, 720px);
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+  transform: translateX(-6px);
+  height: auto;
+  object-fit: contain;
+}
+
+.end-invite-image {
+  width: min(82vw, 520px);
+  height: auto;
+  object-fit: contain;
+  margin-top: -6px;
 }
 
 .heart-row {
