@@ -6,7 +6,6 @@ import { loadPlayerSprite, loadWaitingSprite, loadRockSprites, loadHudImages } f
 export default function GameScreen({ player, onEnd, onRetry }) {
   const [gameState, setGameState] = useState('playing') 
   const gameStateRef = useRef('playing')
-  const [showContinue, setShowContinue] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
   const canvasRef = useRef(null)
@@ -247,7 +246,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
                 ctx.textAlign = 'left'
                 if (!hasShownContinue) {
                     continueTimeoutId = setTimeout(() => {
-                      setShowContinue(true)
+                      onEnd()
                     }, 3000)
                     hasShownContinue = true;
                 }
@@ -492,7 +491,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
           {soundOn ? 'Sonido ON' : 'Sonido OFF'}
         </button>
       </div>
-      {(showContinue || gameState === 'gameover') && (
+      {gameState === 'gameover' && (
         <div className="game-over-overlay" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: '20px' }}>
           {gameState === 'gameover' ? (
             <p style={{ color: '#2c3e50', margin: '0 0 12px', fontSize: '14px' }}>
