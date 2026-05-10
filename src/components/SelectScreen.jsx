@@ -26,7 +26,8 @@ export default function SelectScreen({ onSelect, onSkip }) {
               backgroundPosition: `${(frame * 100) / 3}% 0%`,
               backgroundSize: '400% 100%',
             }}></div>
-            {selected === 'lorena' && <img src="/assets/sparkle.gif" className="sparkle" alt="sparkle" />}
+            <span className="sparkle sparkle-top" aria-hidden="true"></span>
+            <span className="sparkle sparkle-bottom" aria-hidden="true"></span>
           </div>
         </div>
 
@@ -41,7 +42,8 @@ export default function SelectScreen({ onSelect, onSkip }) {
               backgroundPosition: `${(frame * 100) / 3}% 0%`,
               backgroundSize: '400% 100%',
             }}></div>
-            {selected === 'johan' && <img src="/assets/sparkle.gif" className="sparkle" alt="sparkle" />}
+            <span className="sparkle sparkle-top" aria-hidden="true"></span>
+            <span className="sparkle sparkle-bottom" aria-hidden="true"></span>
           </div>
         </div>
       </div>
