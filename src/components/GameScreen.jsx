@@ -4,17 +4,14 @@ import { loadImage } from '../game/utils.js'
 import { loadPlayerSprite, loadWaitingSprite, loadRockSprites, loadHudImages } from '../game/resources.js'
 
 export default function GameScreen({ player, onEnd, onRetry }) {
-  const [gameState, setGameState] = useState('playing') 
+  const [gameState, setGameState] = useState('playing')
   const gameStateRef = useRef('playing')
-  const [isPaused, setIsPaused] = useState(false)
-  const [soundOn, setSoundOn] = useState(true)
   const canvasRef = useRef(null)
-  const jumpRef = useRef(() => {})
+  const jumpRef = useRef(() => { })
   const audioRef = useRef(null)
   const sfxCollectRef = useRef(null)
   const sfxHitRef = useRef(null)
   const sfxClickRef = useRef(null)
-  const pauseRef = useRef(false)
   const soundOnRef = useRef(true)
 
   useEffect(() => {
@@ -22,44 +19,25 @@ export default function GameScreen({ player, onEnd, onRetry }) {
   }, [gameState])
 
   const handleCanvasClick = () => {
-    if (gameStateRef.current !== 'playing' || pauseRef.current) return
+    if (gameStateRef.current !== 'playing') return
     jumpRef.current()
-    if (soundOnRef.current) audioRef.current?.play().catch(() => {})
-  }
-
-  const togglePause = () => {
-    if (gameState !== 'playing') return
-    pauseRef.current = !pauseRef.current
-    setIsPaused(pauseRef.current)
-  }
-
-  const toggleSound = () => {
-    const nextSound = !soundOnRef.current
-    soundOnRef.current = nextSound
-    setSoundOn(nextSound)
-    if (audioRef.current) {
-      if (nextSound) {
-        audioRef.current.play().catch(() => {})
-      } else {
-        audioRef.current.pause()
-      }
-    }
+    if (soundOnRef.current) audioRef.current?.play().catch(() => { })
   }
 
   const playSfx = (audio) => {
     if (!audio || !soundOnRef.current) return
     audio.currentTime = 0
-    audio.play().catch(() => {})
+    audio.play().catch(() => { })
   }
 
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
-    
+
     // Dynamic resize
     const handleResize = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
     window.addEventListener('resize', handleResize);
     handleResize(); // Init
@@ -75,28 +53,28 @@ export default function GameScreen({ player, onEnd, onRetry }) {
     let rings = []
     let frameCount = 0
     let hitTimer = 0
-    
+
     let playerWalkX = 0; // How far the player has walked right during win scene
     let winTransitionAlpha = 0; // Romantic overlay fade-in
     let hasShownContinue = false;
     let continueTimeoutId = null;
-    
+
     let currentScore = 0;
     let localGameState = 'playing';
     let localGameOverReason = '';
 
     const bgImg = loadImage('/assets/background/clouds.png')
     const groundImg = loadImage('/assets/background/ground.png')
-    
+
     const playerImg = loadPlayerSprite(player)
-    
+
     // Waiting sprite: static image of partner standing with puppy
     const waitingImg = loadWaitingSprite(player)
-    
+
     const rockImgs = loadRockSprites()
-    
+
     const berryImg = loadImage('/assets/berry.png')
-    
+
     const ringImg = loadImage('/assets/point-tracker/ring-collected.png')
 
     // HUD Images
@@ -107,7 +85,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
     soundtrack.volume = 0.5
     soundtrack.preload = 'auto'
     audioRef.current = soundtrack
-    soundtrack.play().catch(() => {})
+    soundtrack.play().catch(() => { })
 
     sfxCollectRef.current = new Audio('/assets/sound-effects/collect.ogg')
     sfxCollectRef.current.volume = 0.6
@@ -117,7 +95,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
     sfxClickRef.current.volume = 0.6
 
     const tryPlayAudio = () => {
-      audioRef.current?.play().catch(() => {})
+      audioRef.current?.play().catch(() => { })
     }
 
     // Dynamic coordinates based on height
@@ -135,15 +113,8 @@ export default function GameScreen({ player, onEnd, onRetry }) {
 
     const handleKeyDown = (e) => {
       if (e.code === 'Space') {
-        if (!pauseRef.current) {
-          tryPlayAudio()
-          jump()
-        }
-      }
-
-      if (e.code === 'KeyP' && gameStateRef.current === 'playing') {
-        pauseRef.current = !pauseRef.current
-        setIsPaused(pauseRef.current)
+        tryPlayAudio()
+        jump()
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -176,29 +147,29 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         playerY = baseY;
       }
 
-      if (localGameState !== 'won' && localGameState !== 'gameover' && !pauseRef.current) {
+      if (localGameState !== 'won' && localGameState !== 'gameover') {
         bgOffset -= BACKGROUND_SPEED
         groundOffset -= GROUND_SPEED
       }
       if (bgOffset <= -BACKGROUND_LOOP) bgOffset = 0
       if (groundOffset <= -BACKGROUND_LOOP) groundOffset = 0
-      
+
       ctx.drawImage(bgImg, bgOffset, groundY - 150, 3000, 300)
       ctx.drawImage(bgImg, bgOffset + 3000, groundY - 150, 3000, 300)
 
       ctx.drawImage(groundImg, groundOffset, groundY, 3000, 180)
       ctx.drawImage(groundImg, groundOffset + 3000, groundY, 3000, 180)
 
-      if (localGameState !== 'won' && localGameState !== 'gameover' && !pauseRef.current) {
+      if (localGameState !== 'won' && localGameState !== 'gameover') {
         playerY += velocityY
         velocityY += GRAVITY
       } else if (localGameState === 'won') {
         if (playerY < baseY) {
-            playerY += velocityY
-            velocityY += GRAVITY
+          playerY += velocityY
+          velocityY += GRAVITY
         } else {
-            playerY = baseY
-            isJumping = false
+          playerY = baseY
+          isJumping = false
         }
       }
 
@@ -218,119 +189,119 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         // Calculate frame dimensions from actual image
         let currentFrame;
         let playerDrawX = playerX; // Default left position
-        
+
         if (localGameState === 'won') {
-            // Fade in the romantic overlay
-            if (winTransitionAlpha < 0.45) {
-                winTransitionAlpha += 0.005;
-            }
-            
-            // Player walks RIGHT towards the partner
-            playerWalkX += 3 * scale;
-            playerDrawX = playerX + playerWalkX;
-            
-            // Partner waits at right side of screen
-            const partnerWaitX = canvas.width * 0.6;
-            const meetPoint = partnerWaitX - renderW - (20 * scale);
-            
-            if (playerDrawX >= meetPoint) {
-                playerDrawX = meetPoint;
-                isReunited = true;
-            }
-            
-            // Player animation: walking with ring towards partner
-            if (isReunited) {
-                currentFrame = 12; // Ring pose - presenting the ring
-            } else {
-                // Run towards partner
-                currentFrame = Math.floor(frameCount / 8) % 6;
-            }
-            
-            // Partner ALWAYS shows the waiting sprite (they're waiting for the ring)
-            if (waitingImg.width > 0) {
-                const waitRatio = waitingImg.width / waitingImg.height;
-                const waitH = renderH;
-                const waitW = waitH * waitRatio;
-                ctx.drawImage(waitingImg, partnerWaitX, baseY, waitW, waitH);
-            }
-            
-            if (isReunited) {
-                ctx.fillStyle = '#ff6b6b'
-                ctx.font = 'bold 42px "Press Start 2P", Arial'
-                ctx.textAlign = 'center'
-                ctx.fillText('¡REUNIDOS!', canvas.width / 2, canvas.height * 0.18)
-                ctx.textAlign = 'left'
-                if (!hasShownContinue) {
-                    continueTimeoutId = setTimeout(() => {
-                      onEnd()
-                    }, 3000)
-                    hasShownContinue = true;
-                }
-            }
-        } else if (isJumping) {
-            currentFrame = 1; // Mid-stride for jump
-        } else {
-            // 6-frame run cycle: frames 0,1,2,3,4,5
+          // Fade in the romantic overlay
+          if (winTransitionAlpha < 0.45) {
+            winTransitionAlpha += 0.005;
+          }
+
+          // Player walks RIGHT towards the partner
+          playerWalkX += 3 * scale;
+          playerDrawX = playerX + playerWalkX;
+
+          // Partner waits at right side of screen
+          const partnerWaitX = canvas.width * 0.6;
+          const meetPoint = partnerWaitX - renderW - (20 * scale);
+
+          if (playerDrawX >= meetPoint) {
+            playerDrawX = meetPoint;
+            isReunited = true;
+          }
+
+          // Player animation: walking with ring towards partner
+          if (isReunited) {
+            currentFrame = 12; // Ring pose - presenting the ring
+          } else {
+            // Run towards partner
             currentFrame = Math.floor(frameCount / 8) % 6;
+          }
+
+          // Partner ALWAYS shows the waiting sprite (they're waiting for the ring)
+          if (waitingImg.width > 0) {
+            const waitRatio = waitingImg.width / waitingImg.height;
+            const waitH = renderH;
+            const waitW = waitH * waitRatio;
+            ctx.drawImage(waitingImg, partnerWaitX, baseY, waitW, waitH);
+          }
+
+          if (isReunited) {
+            ctx.fillStyle = '#ff6b6b'
+            ctx.font = 'bold 42px "Press Start 2P", Arial'
+            ctx.textAlign = 'center'
+            ctx.fillText('¡REUNIDOS!', canvas.width / 2, canvas.height * 0.18)
+            ctx.textAlign = 'left'
+            if (!hasShownContinue) {
+              continueTimeoutId = setTimeout(() => {
+                onEnd()
+              }, 3000)
+              hasShownContinue = true;
+            }
+          }
+        } else if (isJumping) {
+          currentFrame = 1; // Mid-stride for jump
+        } else {
+          // 6-frame run cycle: frames 0,1,2,3,4,5
+          currentFrame = Math.floor(frameCount / 8) % 6;
         }
 
         if (hitTimer % 10 < 5 && hitTimer > 0) {
-           ctx.filter = 'sepia(100%) saturate(200%) brightness(70%) hue-rotate(-60deg)';
+          ctx.filter = 'sepia(100%) saturate(200%) brightness(70%) hue-rotate(-60deg)';
         }
-        
+
         ctx.drawImage(playerImg, Math.round(currentFrame * fw), 0, Math.round(fw), fh, playerDrawX, playerY, renderW, renderH);
-        
+
         ctx.filter = 'none';
       }
 
       // --- ROMANTIC OVERLAY (drawn over everything during win) ---
       if (localGameState === 'won' && winTransitionAlpha > 0) {
-          ctx.save();
-          // Soft pink/rose radial vignette from center
-          const cx = canvas.width / 2;
-          const cy = canvas.height / 2;
-          const gradient = ctx.createRadialGradient(cx, cy, canvas.height * 0.2, cx, cy, canvas.height * 0.9);
-          gradient.addColorStop(0, `rgba(255, 200, 210, 0)`);
-          gradient.addColorStop(0.5, `rgba(255, 150, 170, ${winTransitionAlpha * 0.3})`);
-          gradient.addColorStop(1, `rgba(255, 100, 130, ${winTransitionAlpha * 0.6})`);
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // Floating hearts effect
-          const heartCount = 8;
-          for (let i = 0; i < heartCount; i++) {
-              const hx = (canvas.width * (i + 0.5) / heartCount) + Math.sin(frameCount * 0.02 + i * 1.5) * 40;
-              const hy = canvas.height * 0.3 + Math.sin(frameCount * 0.015 + i * 2) * 60 - (frameCount * 0.3 % canvas.height) * 0.15;
-              const hSize = 12 + Math.sin(frameCount * 0.03 + i) * 4;
-              const alpha = winTransitionAlpha * (0.3 + Math.sin(frameCount * 0.025 + i) * 0.15);
-              
-              ctx.fillStyle = `rgba(255, 100, 120, ${alpha})`;
-              ctx.font = `${hSize}px Arial`;
-              ctx.fillText('♥', hx, hy);
-          }
-          ctx.restore();
+        ctx.save();
+        // Soft pink/rose radial vignette from center
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const gradient = ctx.createRadialGradient(cx, cy, canvas.height * 0.2, cx, cy, canvas.height * 0.9);
+        gradient.addColorStop(0, `rgba(255, 200, 210, 0)`);
+        gradient.addColorStop(0.5, `rgba(255, 150, 170, ${winTransitionAlpha * 0.3})`);
+        gradient.addColorStop(1, `rgba(255, 100, 130, ${winTransitionAlpha * 0.6})`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Floating hearts effect
+        const heartCount = 8;
+        for (let i = 0; i < heartCount; i++) {
+          const hx = (canvas.width * (i + 0.5) / heartCount) + Math.sin(frameCount * 0.02 + i * 1.5) * 40;
+          const hy = canvas.height * 0.3 + Math.sin(frameCount * 0.015 + i * 2) * 60 - (frameCount * 0.3 % canvas.height) * 0.15;
+          const hSize = 12 + Math.sin(frameCount * 0.03 + i) * 4;
+          const alpha = winTransitionAlpha * (0.3 + Math.sin(frameCount * 0.025 + i) * 0.15);
+
+          ctx.fillStyle = `rgba(255, 100, 120, ${alpha})`;
+          ctx.font = `${hSize}px Arial`;
+          ctx.fillText('♥', hx, hy);
+        }
+        ctx.restore();
       }
 
-      if (localGameState === 'playing' && !pauseRef.current) {
+      if (localGameState === 'playing') {
         if (frameCount % 120 === 0) {
-            const randomRock = rockImgs[Math.floor(Math.random() * rockImgs.length)]
-            // Rocks sit IN the grass, partially embedded
-            rocks.push({ x: canvas.width, y: groundBaseline - rockSize + rockEmbed, width: rockSize, height: rockSize, img: randomRock })
+          const randomRock = rockImgs[Math.floor(Math.random() * rockImgs.length)]
+          // Rocks sit IN the grass, partially embedded
+          rocks.push({ x: canvas.width, y: groundBaseline - rockSize + rockEmbed, width: rockSize, height: rockSize, img: randomRock })
         }
-        
+
         if (frameCount % 80 === 0) {
-            if (currentScore < WINNING_SCORE) {
-                if (Math.random() > 0.3) {
-                    berries.push({ x: canvas.width, y: baseY - (150 * scale) + Math.random() * (150 * scale), width: berrySize, height: berrySize })
-                }
-            } else if (rings.length === 0) {
-                  rings.push({ x: canvas.width, y: baseY - (100 * scale), width: ringSize, height: ringSize })
+          if (currentScore < WINNING_SCORE) {
+            if (Math.random() > 0.3) {
+              berries.push({ x: canvas.width, y: baseY - (150 * scale) + Math.random() * (150 * scale), width: berrySize, height: berrySize })
             }
+          } else if (rings.length === 0) {
+            rings.push({ x: canvas.width, y: baseY - (100 * scale), width: ringSize, height: ringSize })
+          }
         }
       }
 
       // Only draw/collide obstacles during playing state
-      if (localGameState === 'playing' && !pauseRef.current) {
+      if (localGameState === 'playing') {
         rocks.forEach((rock, index) => {
           rock.x -= 6
           if (rock.img.width > 0) ctx.drawImage(rock.img, rock.x, rock.y, rock.width, rock.height)
@@ -345,22 +316,21 @@ export default function GameScreen({ player, onEnd, onRetry }) {
             rocks[index].ouch = true;
             playSfx(sfxHitRef.current)
             if (currentScore > 0) {
-                currentScore--;
+              currentScore--;
             } else {
-                pauseRef.current = false
-                localGameState = 'gameover'
-                setGameState('gameover')
-                localGameOverReason = '¡La roca te tumbó sin bayas!'
-                rocks = []
-                berries = []
-                rings = []
-              }
+              localGameState = 'gameover'
+              setGameState('gameover')
+              localGameOverReason = '¡La roca te tumbó sin bayas!'
+              rocks = []
+              berries = []
+              rings = []
+            }
           }
-          
+
           if (rock.ouch) {
-              ctx.fillStyle = 'red';
-              ctx.font = 'bold 20px "Press Start 2P", Arial';
-              ctx.fillText("OUCH!", rock.x, rock.y - 10);
+            ctx.fillStyle = 'red';
+            ctx.font = 'bold 20px "Press Start 2P", Arial';
+            ctx.fillText("OUCH!", rock.x, rock.y - 10);
           }
         })
         rocks = rocks.filter(rock => rock.x + rock.width > -100)
@@ -382,10 +352,10 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         })
         berries = berries.filter(berry => berry.x + berry.width > -100)
       }
-      
+
       rings.forEach((ring, index) => {
         if (localGameState !== 'won') ring.x -= 4
-        
+
         // Draw the actual ring-collected asset
         if (localGameState === 'playing' && ringImg.width > 0) {
           ctx.drawImage(ringImg, ring.x, ring.y, ring.width, ring.height);
@@ -430,7 +400,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         const berryY = hudY + (5 * hudScale);
 
         ctx.drawImage(hudCollect, hudX, hudY, hudCollectW, hudCollectH);
-        
+
         let startX = hudX + hudCollectW + (10 * hudScale);
         // Draw 7 berries
         for (let i = 0; i < WINNING_SCORE; i++) {
@@ -440,7 +410,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
             ctx.drawImage(hudBerryShadow, startX + i * hudStep, berryY, berryDraw, berryDraw);
           }
         }
-        
+
         // Draw ring at the end
         if (hudRingShadow.width > 0) {
           const ringHudX = startX + WINNING_SCORE * hudStep;
@@ -453,18 +423,6 @@ export default function GameScreen({ player, onEnd, onRetry }) {
         }
       }
 
-      if (pauseRef.current) {
-        ctx.save()
-        ctx.fillStyle = `rgba(0, 0, 0, ${PAUSE_OVERLAY_ALPHA})`
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-        ctx.fillStyle = '#ffffff'
-        ctx.font = 'bold 42px "Press Start 2P", Arial'
-        ctx.textAlign = 'center'
-        ctx.fillText('PAUSA', canvas.width / 2, canvas.height / 2 - 10)
-        ctx.font = '18px Arial'
-        ctx.fillText('Pulsa P o usa el botón para continuar', canvas.width / 2, canvas.height / 2 + 30)
-        ctx.restore()
-      }
 
       if (localGameState === 'gameover') {
         ctx.save()
@@ -498,10 +456,10 @@ export default function GameScreen({ player, onEnd, onRetry }) {
 
   return (
     <div className="screen game-screen">
-      <canvas 
-        ref={canvasRef} 
-        width={800} 
-        height={500} 
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={500}
         onClick={handleCanvasClick}
         role="img"
         aria-label="Área de juego. Haz clic o presiona espacio para saltar"
@@ -510,16 +468,6 @@ export default function GameScreen({ player, onEnd, onRetry }) {
       >
         Tu navegador no soporta canvas. Por favor usa un navegador moderno.
       </canvas>
-      {gameState === 'playing' && (
-        <div className="game-controls game-controls-right">
-          <button type="button" className="control-btn" onClick={togglePause} aria-label={isPaused ? 'Reanudar juego' : 'Pausar juego'}>
-            {isPaused ? 'Reanudar' : 'Pausa'}
-          </button>
-          <button type="button" className="control-btn" onClick={toggleSound} aria-label={soundOn ? 'Silenciar sonido' : 'Activar sonido'}>
-            {soundOn ? 'Sonido ON' : 'Sonido OFF'}
-          </button>
-        </div>
-      )}
       {gameState === 'gameover' && (
         <div className="game-over-overlay" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: '20px' }}>
           {gameState === 'gameover' ? (
