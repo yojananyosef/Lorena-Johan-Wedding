@@ -92,31 +92,35 @@ button:active {
 .go-btn {
   width: 150px;
   height: 60px;
-  background-image: url('/assets/go.png');
+  background-image: url('/assets/go.avif');
+  transition: transform 0.1s, filter 0.1s;
 }
 
 .go-btn:hover {
-  background-image: url('/assets/go-hover.png');
+  transform: scale(1.05);
+  filter: saturate(1.5) brightness(1.05);
 }
 
 .ok-btn {
   width: 150px;
   height: 60px;
-  background-image: url('/assets/ok.png');
+  background-image: url('/assets/ok.avif');
+  transition: transform 0.1s, filter 0.1s;
 }
 
 .ok-btn:hover {
-  background-image: url('/assets/ok-hover.png');
+  transform: scale(1.05);
+  filter: saturate(1.5) brightness(1.05);
 }
 
 .skip-btn {
   width: 100px;
   height: 40px;
-  background-image: url('/assets/skip.png');
+  background-image: url('/assets/skip.avif');
 }
 
 .skip-btn:hover {
-  background-image: url('/assets/skip-hover.png');
+  background-image: url('/assets/skip-hover.avif');
 }
 
 /* Intro Screen */
@@ -450,14 +454,13 @@ canvas {
   display: block;
   width: 250px;
   height: 60px;
-  background-image: url('/assets/end/wedding-site-button.png');
-  background-size: contain;
+    background-image: url('/assets/end/wedding-site-button.avif');  background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  transition: transform 0.1s;
+  transition: transform 0.1s, filter 0.1s;
 }
 
 .wedding-site-btn:hover {
-  background-image: url('/assets/end/wedding-site-button-hover.png');
   transform: scale(1.05);
+  filter: saturate(1.5) brightness(1.05);
 }

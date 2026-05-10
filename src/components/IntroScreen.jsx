@@ -19,8 +19,8 @@ export default function IntroScreen({ onNext, onSkip }) {
     <div className="screen intro-screen">
       <div className="intro-content">
         <img src="/assets/intro.avif" alt="Couple" className="intro-image" />
-        <img src="/assets/how-to-play/how-to-play.png" alt="How to Play" className="intro-howto" />
-        <img src="/assets/how-to-play/text.png" alt="Instructions" className="intro-instructions" />
+        <img src="/assets/how-to-play/how-to-play.avif" alt="How to Play" className="intro-howto" />
+        <img src="/assets/how-to-play/text.avif" alt="Instructions" className="intro-instructions" />
         <button type="button" className="ok-btn" onClick={() => { playClick(); onNext() }} aria-label="Continuar"></button>
       </div>
       <div className="skip-btn-container">

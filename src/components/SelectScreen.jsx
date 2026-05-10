@@ -39,7 +39,7 @@ export default function SelectScreen({ onSelect, onSkip }) {
 
   return (
     <div className="screen select-screen">
-      <img src="/assets/choose-your-player.png" alt="Choose your player" className="choose-title-img" />
+      <img src="/assets/choose-your-player.avif" alt="Choose your player" className="choose-title-img" />
       <div className="players-container">
         <div 
           className={`player-card ${selected === 'lorena' ? 'selected' : ''}`}
