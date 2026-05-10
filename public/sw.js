@@ -13,6 +13,10 @@ const PRECACHE_URLS = [
   '/assets/clicked-go-and-wedding-site.ogg',
   '/assets/clicked-ok-and-skip-and-player.ogg',
   '/assets/soundtrack.mp3',
+  '/assets/lorena-background.avif',
+  '/assets/johan-background.avif',
+  '/assets/lorena-all-spritesheet.avif',
+  '/assets/johan-all-spritesheet.avif',
 ]
 
 self.addEventListener('install', (event) => {
