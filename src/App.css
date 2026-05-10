@@ -20,7 +20,7 @@ body {
   width: 100vw;
   height: 100vh;
   position: relative;
-  background: url('/assets/background.png') no-repeat center center;
+  background: url('/assets/background.avif') no-repeat center center;
   background-size: cover;
   overflow: hidden;
   display: flex;
@@ -259,11 +259,11 @@ button:active {
 }
 
 .lorena-bg {
-  background-image: url('/assets/lorena-background.png');
+  background-image: url('/assets/lorena-background.avif');
 }
 
 .johan-bg {
-  background-image: url('/assets/johan-background.png');
+  background-image: url('/assets/johan-background.avif');
 }
 
 .player-sprite {

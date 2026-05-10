@@ -63,8 +63,8 @@ export default function GameScreen({ player, onEnd, onRetry }) {
     let localGameState = 'playing';
     let localGameOverReason = '';
 
-    const bgImg = loadImage('/assets/background/clouds.png')
-    const groundImg = loadImage('/assets/background/ground.png')
+    const bgImg = loadImage('/assets/background/clouds.avif')
+    const groundImg = loadImage('/assets/background/ground.avif')
 
     const playerImg = loadPlayerSprite(player)
 
@@ -73,9 +73,9 @@ export default function GameScreen({ player, onEnd, onRetry }) {
 
     const rockImgs = loadRockSprites()
 
-    const berryImg = loadImage('/assets/berry.png')
+    const berryImg = loadImage('/assets/berry.avif')
 
-    const ringImg = loadImage('/assets/point-tracker/ring-collected.png')
+    const ringImg = loadImage('/assets/point-tracker/ring-collected.avif')
 
     // HUD Images
     const { hudCollect, hudBerryShadow, hudBerryCol, hudRingShadow } = loadHudImages()

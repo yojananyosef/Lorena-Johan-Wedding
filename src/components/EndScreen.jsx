@@ -19,7 +19,7 @@ export default function EndScreen({ onRestart }) {
     <div className="screen end-screen">
       <div className="end-content">
         <img
-          src="/assets/end/lorena-and-johan-title.png"
+          src="/assets/end/lorena-and-johan-title.avif"
           alt="Lorena y Johan"
           className="end-title-image"
         />
@@ -32,7 +32,7 @@ export default function EndScreen({ onRestart }) {
         <p>Acompáñanos a celebrar nuestra boda.</p>
         <div className="buttons-row" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <a
-            href="https://withjoy.com/lorena-y-johan"
+            href="https://example.com"
             className="wedding-site-btn"
             target="_blank"
             rel="noopener noreferrer"

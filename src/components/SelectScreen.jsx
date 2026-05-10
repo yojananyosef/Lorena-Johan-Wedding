@@ -45,10 +45,10 @@ export default function SelectScreen({ onSelect, onSkip }) {
           className={`player-card ${selected === 'lorena' ? 'selected' : ''}`}
           onClick={() => handleSelect('lorena')}
         >
-          {selected === 'lorena' && <img src="/assets/click-highlight.png" className="click-highlight" alt="" />}
+          {selected === 'lorena' && <img src="/assets/click-highlight.avif" className="click-highlight" alt="" />}
           <div className="player-bg lorena-bg">
             <div className="player-sprite" style={{
-              backgroundImage: 'url(/assets/lorena-spritesheet.png)',
+              backgroundImage: 'url(/assets/lorena-spritesheet.avif)',
               backgroundPosition: `${(frame * 100) / 3}% 0%`,
               backgroundSize: '400% 100%',
             }}></div>
@@ -61,10 +61,10 @@ export default function SelectScreen({ onSelect, onSkip }) {
           className={`player-card ${selected === 'johan' ? 'selected' : ''}`}
           onClick={() => handleSelect('johan')}
         >
-          {selected === 'johan' && <img src="/assets/click-highlight.png" className="click-highlight" alt="" />}
+          {selected === 'johan' && <img src="/assets/click-highlight.avif" className="click-highlight" alt="" />}
           <div className="player-bg johan-bg">
             <div className="player-sprite" style={{
-              backgroundImage: 'url(/assets/johan-spritesheet.png)',
+              backgroundImage: 'url(/assets/johan-spritesheet.avif)',
               backgroundPosition: `${(frame * 100) / 3}% 0%`,
               backgroundSize: '400% 100%',
             }}></div>
