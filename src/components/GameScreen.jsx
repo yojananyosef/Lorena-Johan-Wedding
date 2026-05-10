@@ -392,14 +392,22 @@ export default function GameScreen({ player, onEnd, onRetry }) {
       rings = rings.filter(ring => ring.x + ring.width > -100)
 
       // --- DRAW HUD ---
-      if (hudCollect.width > 0) {
-        const hudScale = Math.min(1, Math.max(0.8, canvas.width / 900));
-        const hudX = 20 * hudScale;
-        const hudY = 20 * hudScale;
-        const hudCollectW = 150 * hudScale;
-        const hudCollectH = 45 * hudScale;
-        const hudStep = 45 * hudScale;
-        const berryDraw = 40 * hudScale;
+      if (localGameState !== 'gameover' && hudCollect.width > 0) {
+        const baseCollectW = 150;
+        const baseCollectH = 45;
+        const baseStep = 45;
+        const baseBerry = 40;
+        const baseRing = 50;
+        const available = canvas.width - 32;
+        const desired = baseCollectW + (WINNING_SCORE + 1) * baseStep + 20;
+        const hudScale = Math.min(1, Math.max(0.45, available / desired));
+        const hudPadding = 12 * hudScale;
+        const hudX = hudPadding;
+        const hudY = hudPadding;
+        const hudCollectW = baseCollectW * hudScale;
+        const hudCollectH = baseCollectH * hudScale;
+        const hudStep = baseStep * hudScale;
+        const berryDraw = baseBerry * hudScale;
         const berryY = hudY + (5 * hudScale);
 
         ctx.drawImage(hudCollect, hudX, hudY, hudCollectW, hudCollectH);
@@ -419,7 +427,7 @@ export default function GameScreen({ player, onEnd, onRetry }) {
           const ringHudX = startX + WINNING_SCORE * hudStep;
           if (localGameState === 'won' && ringImg.width > 0) {
             // Show the beautiful hand-drawn collected ring
-            ctx.drawImage(ringImg, ringHudX, hudY - (4 * hudScale), 50 * hudScale, 50 * hudScale);
+            ctx.drawImage(ringImg, ringHudX, hudY - (4 * hudScale), baseRing * hudScale, baseRing * hudScale);
           } else {
             ctx.drawImage(hudRingShadow, ringHudX, berryY, berryDraw, berryDraw);
           }
@@ -483,14 +491,16 @@ export default function GameScreen({ player, onEnd, onRetry }) {
       >
         Tu navegador no soporta canvas. Por favor usa un navegador moderno.
       </canvas>
-      <div className="game-controls game-controls-right">
-        <button type="button" className="control-btn" onClick={togglePause} aria-label={isPaused ? 'Reanudar juego' : 'Pausar juego'}>
-          {isPaused ? 'Reanudar' : 'Pausa'}
-        </button>
-        <button type="button" className="control-btn" onClick={toggleSound} aria-label={soundOn ? 'Silenciar sonido' : 'Activar sonido'}>
-          {soundOn ? 'Sonido ON' : 'Sonido OFF'}
-        </button>
-      </div>
+      {gameState === 'playing' && (
+        <div className="game-controls game-controls-right">
+          <button type="button" className="control-btn" onClick={togglePause} aria-label={isPaused ? 'Reanudar juego' : 'Pausar juego'}>
+            {isPaused ? 'Reanudar' : 'Pausa'}
+          </button>
+          <button type="button" className="control-btn" onClick={toggleSound} aria-label={soundOn ? 'Silenciar sonido' : 'Activar sonido'}>
+            {soundOn ? 'Sonido ON' : 'Sonido OFF'}
+          </button>
+        </div>
+      )}
       {gameState === 'gameover' && (
         <div className="game-over-overlay" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: '20px' }}>
           {gameState === 'gameover' ? (
